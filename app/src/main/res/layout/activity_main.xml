@@ -19,14 +19,24 @@
         />
 
     <Button
-        android:id="@+id/btnTagg"
+    android:id="@+id/btnTagg"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:text="@string/tagg"
+    android:layout_marginTop="20dp"
+    android:width="200dp"
+    android:onClick="tagg"/>
+
+    <Button
+        android:id="@+id/btnIp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/tagg"
+        android:text="IP"
         android:layout_marginTop="20dp"
         android:width="200dp"
-        android:onClick="tagg"/>
+        android:onClick="getLocalIpAddress"/>
 
     <TextView
         android:id="@+id/txtEtiqueta"

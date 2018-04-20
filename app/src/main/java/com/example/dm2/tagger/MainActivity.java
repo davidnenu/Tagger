@@ -1,16 +1,33 @@
 package com.example.dm2.tagger;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.Formatter;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 public class MainActivity extends AppCompatActivity {
 
     private String etiquetas;
     TextView txtEtiqueta;
+    private Socket conexion;
+    private DataOutputStream dos;
+    private String ip="213.254.95.118";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,9 +42,25 @@ public class MainActivity extends AppCompatActivity {
         if(etiquetas.equals("")){
             Toast.makeText(getApplicationContext(), "Elige etiquetas para conectar", Toast.LENGTH_LONG).show();
         }else{
-            Conectar cn=new Conectar();
-            //cn.conectar();
+            myTask mt=new myTask();
+            mt.execute();
+            Toast.makeText(getApplicationContext(),"Etiquetas enviadas",Toast.LENGTH_LONG).show();
+        }
+    }
 
+    public void getLocalIpAddress(View v) {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                        Toast.makeText(getApplicationContext(),inetAddress.getHostAddress().toString(),Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -51,4 +84,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    class myTask extends AsyncTask<Void,Void,Void> {
+
+        protected Void doInBackground(Void... params){
+            try{
+                conexion=new Socket(ip,6780);
+                dos = new DataOutputStream(conexion.getOutputStream());
+                dos.writeUTF(etiquetas);
+                dos.close();
+                //s.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+    }
+
+
 }
