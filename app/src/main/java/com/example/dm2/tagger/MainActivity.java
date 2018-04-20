@@ -48,20 +48,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getLocalIpAddress(View v) {
+    public String getLocalIpAddress() {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface intf = en.nextElement();
                 for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
                     if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                        Toast.makeText(getApplicationContext(),inetAddress.getHostAddress().toString(),Toast.LENGTH_LONG).show();
+                        return(inetAddress.getHostAddress().toString());
                     }
                 }
             }
         } catch (SocketException ex) {
             ex.printStackTrace();
         }
+        return null;
     }
 
     public void tagg(View v){
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             try{
                 conexion=new Socket(ip,6780);
                 dos = new DataOutputStream(conexion.getOutputStream());
-                dos.writeUTF(etiquetas);
+                dos.writeUTF(etiquetas+":"+getLocalIpAddress());
                 dos.close();
                 //s.close();
             }catch (IOException e){
