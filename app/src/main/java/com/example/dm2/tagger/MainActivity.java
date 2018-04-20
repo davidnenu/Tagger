@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 DataInputStream flujoEntrada = null;
                 conexion=new Socket(ip,6780);
                 dos = new DataOutputStream(conexion.getOutputStream());
-                dos.writeUTF(etiquetas+":"+getLocalIpAddress());
+                dos.writeUTF(etiquetas+"#"+getLocalIpAddress());
                 try {
                     flujoEntrada = new DataInputStream(conexion.getInputStream());
                     // Recibimos
