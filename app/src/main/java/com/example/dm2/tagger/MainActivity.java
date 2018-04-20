@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,6 +21,7 @@ import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private Socket conexion;
     private DataOutputStream dos;
     private String ip="213.254.95.118";
+    private String s="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
         }else{
             myTask mt=new myTask();
             mt.execute();
-            Toast.makeText(getApplicationContext(),"Etiquetas enviadas",Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(),"Etiquetas enviadas",Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(),"Recibido:" + s, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -86,19 +90,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class myTask extends AsyncTask<Void,Void,Void> {
+    class myTask extends AsyncTask<String,Void,String> {
 
-        protected Void doInBackground(Void... params){
+        protected String doInBackground(String... params){
             try{
+                DataInputStream flujoEntrada = null;
                 conexion=new Socket(ip,6780);
                 dos = new DataOutputStream(conexion.getOutputStream());
                 dos.writeUTF(etiquetas+":"+getLocalIpAddress());
+                try {
+                    flujoEntrada = new DataInputStream(conexion.getInputStream());
+                    // Recibimos
+                    s = flujoEntrada.readUTF();
+                } catch (java.net.SocketException e) {
+                }
                 dos.close();
-                //s.close();
+                flujoEntrada.close();
+
             }catch (IOException e){
                 e.printStackTrace();
             }
-            return null;
+            return s;
+        }
+        protected void onPostExecute(String s2){
+            txtEtiqueta.setText(s2);
         }
 
     }
